@@ -105,8 +105,6 @@
     font-weight: 700; cursor: pointer; transition: background .15s; user-select: none;
   }
   .hint-chip:hover { background: #e9d5ff; }
-
-  /* ── Voice input area ── */
   .input-area {
     padding: 10px 12px; border-top: 1px solid #f3e8ff;
     display: flex; gap: 8px; align-items: center;
@@ -124,32 +122,25 @@
     display: flex; align-items: center; justify-content: center;
     transition: all .2s; flex-shrink: 0;
     box-shadow: 0 4px 12px rgba(247,37,133,.35);
+    -webkit-tap-highlight-color: transparent;
   }
-  .mic-btn:hover { transform: scale(1.08); }
   .mic-btn.listening {
     animation: pulse 1s infinite;
     background: linear-gradient(135deg, #f72585, #b5179e);
   }
-  .mic-btn:disabled { opacity: .4; cursor: not-allowed; animation: none; }
   .send-btn {
     width: 38px; height: 38px; border-radius: 50%; border: none;
     background: linear-gradient(135deg, #a855f7, #7c3aed);
     color: white; font-size: 1.1rem; cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     transition: transform .15s; flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
   }
-  .send-btn:hover { transform: scale(1.1); }
-  .send-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
-
-  /* voice status banner */
+  .send-btn:disabled { opacity: .5; cursor: not-allowed; }
   .voice-status {
     text-align: center; font-size: .75rem; font-weight: 700;
-    color: #f72585; padding: 4px 0; min-height: 22px;
-    display: none;
+    color: #f72585; padding: 3px 0; min-height: 20px;
   }
-  .voice-status.visible { display: block; }
-
-  /* tts toggle */
   .tts-toggle {
     display: flex; align-items: center; gap: 6px;
     font-size: .75rem; color: #888; margin-bottom: 10px;
@@ -166,9 +157,7 @@
     box-shadow: 0 1px 4px rgba(0,0,0,.2);
   }
   .toggle-track.on .toggle-thumb { left: 18px; }
-
   .no-book-msg { text-align: center; color: #bbb; font-size: .85rem; margin: auto; line-height: 2; }
-
   @keyframes bounceIn {
     0%   { transform: translateY(-20px); opacity: 0; }
     60%  { transform: translateY(4px); }
@@ -204,9 +193,7 @@
 </div>
 
 <label class="tts-toggle" onclick="toggleTTS()">
-  <div class="toggle-track on" id="ttsTrack">
-    <div class="toggle-thumb"></div>
-  </div>
+  <div class="toggle-track on" id="ttsTrack"><div class="toggle-thumb"></div></div>
   🔊 Ollie 목소리로 읽어주기
 </label>
 
@@ -224,11 +211,11 @@
   <div class="thinking" id="thinking">
     <div class="dot"></div><div class="dot"></div><div class="dot"></div>
   </div>
-  <div class="voice-status" id="voiceStatus">🎤 듣고 있어요... 말해보세요!</div>
+  <div class="voice-status" id="voiceStatus"></div>
   <div class="hints" id="hints"></div>
   <div class="input-area">
     <input id="userInput" type="text" placeholder="말하거나 타이핑하세요..." disabled>
-    <button class="mic-btn" id="micBtn" onclick="toggleMic()" disabled title="마이크로 말하기">🎤</button>
+    <button class="mic-btn" id="micBtn" ontouchstart="handleMicTouch(event)" onclick="handleMicClick()" disabled>🎤</button>
     <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled>➤</button>
   </div>
 </div>
@@ -247,21 +234,22 @@ let selectedBook = null;
 let conversationHistory = [];
 let customBooks = [];
 let ttsEnabled = true;
-let recognition = null;
 let isListening = false;
+let recognition = null;
+let recognitionActive = false;
 
 // ── TTS ──
 function speak(text) {
   if (!ttsEnabled) return;
   window.speechSynthesis.cancel();
-  const clean = text.replace(/<[^>]+>/g, '').replace(/[🦉👦📚😊🎉]/g, '');
+  const clean = text.replace(/<[^>]+>/g, '').replace(/[\u{1F300}-\u{1FFFF}]/gu, '');
   const utt = new SpeechSynthesisUtterance(clean);
   utt.lang = 'en-US';
   utt.rate = 0.88;
-  utt.pitch = 1.15;
-  // prefer a friendly female voice
+  utt.pitch = 1.1;
   const voices = window.speechSynthesis.getVoices();
-  const pick = voices.find(v => v.lang.startsWith('en') && /samantha|karen|moira|fiona|victoria|zira/i.test(v.name))
+  const pick = voices.find(v => v.lang === 'en-US' && /samantha|karen|moira|fiona|victoria|zira/i.test(v.name))
+            || voices.find(v => v.lang === 'en-US')
             || voices.find(v => v.lang.startsWith('en'));
   if (pick) utt.voice = pick;
   window.speechSynthesis.speak(utt);
@@ -269,50 +257,125 @@ function speak(text) {
 
 function toggleTTS() {
   ttsEnabled = !ttsEnabled;
-  const track = document.getElementById('ttsTrack');
-  track.className = ttsEnabled ? 'toggle-track on' : 'toggle-track';
+  document.getElementById('ttsTrack').className = ttsEnabled ? 'toggle-track on' : 'toggle-track';
 }
 
 // ── Speech Recognition ──
-function initSpeech() {
+function createRecognition() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) {
-    document.getElementById('micBtn').title = '이 브라우저는 음성 인식을 지원하지 않아요';
-    document.getElementById('micBtn').disabled = true;
-    return;
-  }
-  recognition = new SR();
-  recognition.lang = 'en-US';
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
+  if (!SR) return null;
 
-  recognition.onresult = (e) => {
-    const transcript = e.results[0][0].transcript;
-    document.getElementById('userInput').value = transcript;
-    stopListening();
-    sendMessage();
+  const r = new SR();
+  r.lang = 'en-US';
+  r.continuous = false;
+  r.interimResults = false;
+  r.maxAlternatives = 3;
+
+  r.onstart = () => {
+    recognitionActive = true;
+    setVoiceStatus('🎤 듣고 있어요... 영어로 말해보세요!');
   };
-  recognition.onerror = () => stopListening();
-  recognition.onend = () => { if (isListening) stopListening(); };
+
+  r.onresult = (e) => {
+    recognitionActive = false;
+    const transcript = e.results[0][0].transcript;
+    setVoiceStatus('✅ 인식됨: ' + transcript);
+    document.getElementById('userInput').value = transcript;
+    setTimeout(() => {
+      setVoiceStatus('');
+      setMicIdle();
+      sendMessage();
+    }, 600);
+  };
+
+  r.onnomatch = () => {
+    recognitionActive = false;
+    setVoiceStatus('❌ 못 들었어요. 다시 눌러보세요!');
+    setMicIdle();
+    setTimeout(() => setVoiceStatus(''), 2000);
+  };
+
+  r.onerror = (e) => {
+    recognitionActive = false;
+    let msg = '❌ 오류: ' + e.error;
+    if (e.error === 'no-speech') msg = '🔇 소리가 없어요. 다시 눌러보세요!';
+    if (e.error === 'not-allowed') msg = '🚫 마이크 권한이 필요해요!';
+    if (e.error === 'network') msg = '🌐 네트워크 오류. 다시 시도해요!';
+    setVoiceStatus(msg);
+    setMicIdle();
+    setTimeout(() => setVoiceStatus(''), 3000);
+  };
+
+  r.onend = () => {
+    recognitionActive = false;
+    if (isListening) {
+      // ended without result — reset
+      setMicIdle();
+      if (!document.getElementById('voiceStatus').textContent.includes('인식됨')) {
+        setVoiceStatus('🔇 못 들었어요. 다시 눌러보세요!');
+        setTimeout(() => setVoiceStatus(''), 2500);
+      }
+    }
+  };
+
+  return r;
+}
+
+function handleMicTouch(e) {
+  e.preventDefault(); // prevent ghost click on Android
+  toggleMic();
+}
+function handleMicClick() {
+  // only fires if touch didn't
+  toggleMic();
 }
 
 function toggleMic() {
-  if (isListening) { stopListening(); return; }
-  window.speechSynthesis.cancel();
-  recognition.start();
-  isListening = true;
-  document.getElementById('micBtn').classList.add('listening');
-  document.getElementById('micBtn').textContent = '⏹';
-  const vs = document.getElementById('voiceStatus');
-  vs.className = 'voice-status visible';
+  if (isListening) {
+    stopMic();
+  } else {
+    startMic();
+  }
 }
 
-function stopListening() {
+function startMic() {
+  window.speechSynthesis.cancel();
+  // Always create a fresh recognition instance (Android workaround)
+  recognition = createRecognition();
+  if (!recognition) {
+    setVoiceStatus('❌ 이 브라우저는 음성 인식을 지원하지 않아요');
+    return;
+  }
+  try {
+    recognition.start();
+    isListening = true;
+    const btn = document.getElementById('micBtn');
+    btn.classList.add('listening');
+    btn.textContent = '⏹';
+  } catch(e) {
+    setVoiceStatus('❌ 마이크 시작 오류. 다시 눌러보세요!');
+    setTimeout(() => setVoiceStatus(''), 2500);
+  }
+}
+
+function stopMic() {
   isListening = false;
-  try { recognition.stop(); } catch(e) {}
-  document.getElementById('micBtn').classList.remove('listening');
-  document.getElementById('micBtn').textContent = '🎤';
-  document.getElementById('voiceStatus').className = 'voice-status';
+  if (recognition) {
+    try { recognition.abort(); } catch(e) {}
+    recognition = null;
+  }
+  setMicIdle();
+}
+
+function setMicIdle() {
+  isListening = false;
+  const btn = document.getElementById('micBtn');
+  btn.classList.remove('listening');
+  btn.textContent = '🎤';
+}
+
+function setVoiceStatus(msg) {
+  document.getElementById('voiceStatus').textContent = msg;
 }
 
 // ── Books ──
@@ -343,6 +406,7 @@ function addCustomBook() {
 
 // ── Chat ──
 function startChat() {
+  stopMic();
   window.speechSynthesis.cancel();
   conversationHistory = [];
   document.getElementById('messages').innerHTML = '';
@@ -460,11 +524,9 @@ function useHint(t) {
   document.getElementById('userInput').focus();
 }
 
-// ── Init ──
 document.getElementById('userInput').addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
 document.getElementById('customBookInput').addEventListener('keydown', e => { if (e.key === 'Enter') addCustomBook(); });
 window.speechSynthesis.onvoiceschanged = () => {};
-initSpeech();
 renderBooks();
 </script>
 </body>
