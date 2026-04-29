@@ -14,33 +14,37 @@
     display: flex; flex-direction: column; align-items: center;
     padding: 16px;
   }
-  .header { text-align: center; margin-bottom: 18px; animation: bounceIn .7s ease; }
-  .header h1 {
-    font-family: 'Fredoka One', cursive; font-size: 2rem;
-    color: #5c3d8f; text-shadow: 3px 3px 0 #e8c7ff;
+  .header { text-align: center; margin-bottom: 14px; animation: bounceIn .7s ease; }
+  .header h1 { font-family: 'Fredoka One', cursive; font-size: 2rem; color: #5c3d8f; text-shadow: 3px 3px 0 #e8c7ff; }
+  .header p { font-size: .82rem; color: #999; margin-top: 4px; }
+
+  .tip-box {
+    width: 100%; max-width: 480px;
+    background: #fff9e6;
+    border: 2px dashed #ffc94d;
+    border-radius: 16px;
+    padding: 10px 14px;
+    font-size: .78rem;
+    color: #7a5c00;
+    margin-bottom: 14px;
+    line-height: 1.6;
   }
-  .header p { font-size: .85rem; color: #888; margin-top: 4px; }
-  .section-label {
-    font-size: .75rem; font-weight: 800; letter-spacing: 1px;
-    text-transform: uppercase; color: #a078c8; margin-bottom: 8px;
-  }
-  .book-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    gap: 10px; width: 100%; max-width: 480px; margin-bottom: 16px;
-  }
+  .tip-box b { color: #e67e00; }
+
+  .section-label { font-size: .75rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #a078c8; margin-bottom: 8px; }
+  .book-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; max-width: 480px; margin-bottom: 14px; }
   .book-card {
     background: white; border-radius: 16px; padding: 12px 8px;
     text-align: center; cursor: pointer; border: 3px solid transparent;
     transition: all .2s; box-shadow: 0 4px 12px rgba(0,0,0,.08); user-select: none;
   }
-  .book-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,.12); }
+  .book-card:active { transform: scale(.96); }
   .book-card.selected { border-color: #a855f7; background: #faf0ff; }
   .book-card .emoji { font-size: 2rem; display: block; margin-bottom: 4px; }
   .book-card .title { font-size: .72rem; font-weight: 800; color: #444; line-height: 1.3; }
   .book-card .level { font-size: .65rem; color: #aaa; margin-top: 2px; }
-  .custom-book-wrap {
-    width: 100%; max-width: 480px; margin-bottom: 16px; display: flex; gap: 8px;
-  }
+
+  .custom-book-wrap { width: 100%; max-width: 480px; margin-bottom: 14px; display: flex; gap: 8px; }
   .custom-book-wrap input {
     flex: 1; padding: 10px 14px; border-radius: 50px;
     border: 2px solid #e0c8f8; font-family: 'Nunito', sans-serif;
@@ -50,138 +54,88 @@
   .custom-book-wrap button {
     padding: 10px 18px; border-radius: 50px; border: none;
     background: linear-gradient(135deg, #a855f7, #7c3aed);
-    color: white; font-family: 'Fredoka One', cursive;
-    font-size: .9rem; cursor: pointer; transition: opacity .2s;
+    color: white; font-family: 'Fredoka One', cursive; font-size: .9rem; cursor: pointer;
   }
-  .custom-book-wrap button:hover { opacity: .85; }
+
   .chat-container {
     width: 100%; max-width: 480px; background: white;
     border-radius: 24px; box-shadow: 0 8px 32px rgba(100,60,180,.15);
-    overflow: hidden; display: flex; flex-direction: column; height: 420px;
+    overflow: hidden; display: flex; flex-direction: column; height: 440px;
   }
   .chat-header {
     background: linear-gradient(135deg, #a855f7, #7c3aed);
     padding: 12px 18px; display: flex; align-items: center; gap: 10px;
   }
-  .avatar {
-    width: 40px; height: 40px; background: white; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.4rem; flex-shrink: 0;
-  }
+  .avatar { width: 42px; height: 42px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
   .chat-header-info .name { font-family: 'Fredoka One', cursive; color: white; font-size: 1rem; }
   .chat-header-info .status { font-size: .7rem; color: #e9d5ff; }
-  .messages {
-    flex: 1; overflow-y: auto; padding: 16px 14px;
-    display: flex; flex-direction: column; gap: 10px; scroll-behavior: smooth;
-  }
+
+  /* speaking animation on avatar */
+  .avatar.speaking { animation: speakPulse .5s ease infinite alternate; }
+  @keyframes speakPulse { from { box-shadow: 0 0 0 0 rgba(255,255,255,.5); } to { box-shadow: 0 0 0 8px rgba(255,255,255,0); } }
+
+  .messages { flex: 1; overflow-y: auto; padding: 14px 12px; display: flex; flex-direction: column; gap: 10px; scroll-behavior: smooth; }
   .messages::-webkit-scrollbar { width: 4px; }
   .messages::-webkit-scrollbar-thumb { background: #e0c8f8; border-radius: 4px; }
-  .msg {
-    max-width: 82%; padding: 10px 14px; border-radius: 18px;
-    font-size: .85rem; line-height: 1.5; animation: msgPop .25s ease;
-  }
-  .msg.ai {
-    background: #f3e8ff; color: #4a1f80;
-    border-bottom-left-radius: 4px; align-self: flex-start;
-  }
-  .msg.user {
-    background: linear-gradient(135deg, #a855f7, #7c3aed);
-    color: white; border-bottom-right-radius: 4px; align-self: flex-end;
-  }
-  .msg .speaker { font-size: .65rem; font-weight: 800; opacity: .65; margin-bottom: 3px; }
-  .thinking {
-    align-self: flex-start; background: #f3e8ff;
-    border-radius: 18px; border-bottom-left-radius: 4px;
-    padding: 10px 16px; display: none; margin: 0 14px;
-  }
+
+  .msg { max-width: 84%; padding: 10px 14px; border-radius: 18px; font-size: .85rem; line-height: 1.55; animation: msgPop .25s ease; }
+  .msg.ai { background: #f3e8ff; color: #4a1f80; border-bottom-left-radius: 4px; align-self: flex-start; }
+  .msg.user { background: linear-gradient(135deg, #a855f7, #7c3aed); color: white; border-bottom-right-radius: 4px; align-self: flex-end; }
+  .msg .speaker { font-size: .65rem; font-weight: 800; opacity: .6; margin-bottom: 3px; }
+
+  /* replay button on AI messages */
+  .replay-btn { display: inline-block; margin-top: 5px; background: none; border: 1.5px solid #c084fc; border-radius: 50px; padding: 2px 10px; font-size: .68rem; color: #a855f7; cursor: pointer; font-family: 'Nunito', sans-serif; font-weight: 700; }
+  .replay-btn:active { background: #f3e8ff; }
+
+  .thinking { align-self: flex-start; background: #f3e8ff; border-radius: 18px; border-bottom-left-radius: 4px; padding: 10px 16px; display: none; margin: 0 12px; }
   .thinking.visible { display: flex; gap: 5px; align-items: center; }
   .dot { width: 7px; height: 7px; border-radius: 50%; background: #a855f7; animation: dot 1.2s infinite; }
   .dot:nth-child(2) { animation-delay: .2s; }
   .dot:nth-child(3) { animation-delay: .4s; }
-  .hints { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 12px 8px; }
-  .hint-chip {
-    background: #f3e8ff; color: #7c3aed; border: 1.5px solid #e0c8f8;
-    border-radius: 50px; padding: 4px 12px; font-size: .72rem;
-    font-weight: 700; cursor: pointer; transition: background .15s; user-select: none;
-  }
-  .hint-chip:hover { background: #e9d5ff; }
-  .input-area {
-    padding: 10px 12px; border-top: 1px solid #f3e8ff;
-    display: flex; gap: 8px; align-items: center;
-  }
+
+  .hints { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 12px 6px; }
+  .hint-chip { background: #f3e8ff; color: #7c3aed; border: 1.5px solid #e0c8f8; border-radius: 50px; padding: 5px 13px; font-size: .72rem; font-weight: 700; cursor: pointer; }
+  .hint-chip:active { background: #e9d5ff; }
+
+  .input-area { padding: 8px 12px 10px; border-top: 1px solid #f3e8ff; display: flex; gap: 8px; align-items: center; }
   .input-area input {
-    flex: 1; padding: 9px 14px; border-radius: 50px;
+    flex: 1; padding: 11px 14px; border-radius: 50px;
     border: 2px solid #e0c8f8; font-family: 'Nunito', sans-serif;
-    font-size: .85rem; outline: none; color: #333;
+    font-size: .9rem; outline: none; color: #333;
   }
   .input-area input:focus { border-color: #a855f7; }
-  .mic-btn {
-    width: 46px; height: 46px; border-radius: 50%; border: none;
-    background: linear-gradient(135deg, #ff6b9d, #f72585);
-    color: white; font-size: 1.3rem; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: all .2s; flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba(247,37,133,.35);
-    -webkit-tap-highlight-color: transparent;
-  }
-  .mic-btn.listening {
-    animation: pulse 1s infinite;
-    background: linear-gradient(135deg, #f72585, #b5179e);
-  }
   .send-btn {
-    width: 38px; height: 38px; border-radius: 50%; border: none;
+    width: 42px; height: 42px; border-radius: 50%; border: none;
     background: linear-gradient(135deg, #a855f7, #7c3aed);
-    color: white; font-size: 1.1rem; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: transform .15s; flex-shrink: 0;
-    -webkit-tap-highlight-color: transparent;
+    color: white; font-size: 1.2rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
   }
-  .send-btn:disabled { opacity: .5; cursor: not-allowed; }
-  .voice-status {
-    text-align: center; font-size: .75rem; font-weight: 700;
-    color: #f72585; padding: 3px 0; min-height: 20px;
-  }
-  .tts-toggle {
-    display: flex; align-items: center; gap: 6px;
-    font-size: .75rem; color: #888; margin-bottom: 10px;
-    cursor: pointer; user-select: none;
-  }
-  .toggle-track {
-    width: 36px; height: 20px; border-radius: 10px;
-    background: #ddd; position: relative; transition: background .2s;
-  }
+  .send-btn:disabled { opacity: .4; }
+
+  .tts-toggle { display: flex; align-items: center; gap: 6px; font-size: .75rem; color: #888; margin-bottom: 10px; cursor: pointer; user-select: none; }
+  .toggle-track { width: 36px; height: 20px; border-radius: 10px; background: #ddd; position: relative; transition: background .2s; }
   .toggle-track.on { background: #a855f7; }
-  .toggle-thumb {
-    width: 16px; height: 16px; border-radius: 50%; background: white;
-    position: absolute; top: 2px; left: 2px; transition: left .2s;
-    box-shadow: 0 1px 4px rgba(0,0,0,.2);
-  }
+  .toggle-thumb { width: 16px; height: 16px; border-radius: 50%; background: white; position: absolute; top: 2px; left: 2px; transition: left .2s; box-shadow: 0 1px 4px rgba(0,0,0,.2); }
   .toggle-track.on .toggle-thumb { left: 18px; }
-  .no-book-msg { text-align: center; color: #bbb; font-size: .85rem; margin: auto; line-height: 2; }
-  @keyframes bounceIn {
-    0%   { transform: translateY(-20px); opacity: 0; }
-    60%  { transform: translateY(4px); }
-    100% { transform: translateY(0); opacity: 1; }
-  }
-  @keyframes msgPop {
-    from { transform: scale(.92); opacity: 0; }
-    to   { transform: scale(1);   opacity: 1; }
-  }
-  @keyframes dot {
-    0%,80%,100% { transform: scale(.7); opacity: .4; }
-    40%         { transform: scale(1.1); opacity: 1; }
-  }
-  @keyframes pulse {
-    0%,100% { box-shadow: 0 0 0 0 rgba(247,37,133,.5); }
-    50%     { box-shadow: 0 0 0 12px rgba(247,37,133,0); }
-  }
+
+  .no-book-msg { text-align: center; color: #ccc; font-size: .85rem; margin: auto; line-height: 2.2; }
+
+  @keyframes bounceIn { 0% { transform: translateY(-18px); opacity: 0; } 60% { transform: translateY(4px); } 100% { transform: translateY(0); opacity: 1; } }
+  @keyframes msgPop { from { transform: scale(.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  @keyframes dot { 0%,80%,100% { transform: scale(.7); opacity: .4; } 40% { transform: scale(1.1); opacity: 1; } }
 </style>
 </head>
 <body>
 
 <div class="header">
   <h1>📖 Book Chat Buddy</h1>
-  <p>동아 리딩앤 책을 읽고 AI 친구와 영어로 대화해요!</p>
+  <p>리딩앤 책을 읽고 Ollie와 영어로 대화해요!</p>
+</div>
+
+<div class="tip-box">
+  🎤 <b>음성으로 말하는 법:</b> 입력창을 탭하면 키보드가 열려요.<br>
+  키보드에서 <b>🎤 마이크 버튼</b>을 누르고 영어로 말하면 돼요!<br>
+  <span style="color:#aaa;font-size:.72rem">* 삼성/구글 키보드 모두 지원</span>
 </div>
 
 <div class="section-label">읽은 책을 선택하세요 👇</div>
@@ -199,206 +153,118 @@
 
 <div class="chat-container">
   <div class="chat-header">
-    <div class="avatar">🦉</div>
+    <div class="avatar" id="avatarEl">🦉</div>
     <div class="chat-header-info">
       <div class="name">Ollie the Owl</div>
       <div class="status" id="statusText">Pick a book to start!</div>
     </div>
   </div>
   <div class="messages" id="messages">
-    <div class="no-book-msg">👆 위에서 책을 선택하면<br>Ollie가 영어로 질문해줄 거예요!</div>
+    <div class="no-book-msg">👆 위에서 책을 골라보세요!<br>🦉 Ollie가 기다리고 있어요~</div>
   </div>
   <div class="thinking" id="thinking">
     <div class="dot"></div><div class="dot"></div><div class="dot"></div>
   </div>
-  <div class="voice-status" id="voiceStatus"></div>
   <div class="hints" id="hints"></div>
   <div class="input-area">
-    <input id="userInput" type="text" placeholder="말하거나 타이핑하세요..." disabled>
-    <button class="mic-btn" id="micBtn" ontouchstart="handleMicTouch(event)" onclick="handleMicClick()" disabled>🎤</button>
+    <input id="userInput" type="text" placeholder="탭해서 키보드 🎤로 말하거나 타이핑!" disabled>
     <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled>➤</button>
   </div>
 </div>
 
 <script>
 const BOOKS = [
-  { emoji: "🐛", title: "The Very Hungry Caterpillar", level: "Level 1", key: "hungry_caterpillar" },
-  { emoji: "🐶", title: "Go, Dog. Go!", level: "Level 1", key: "go_dog" },
-  { emoji: "🎩", title: "The Cat in the Hat", level: "Level 2", key: "cat_hat" },
-  { emoji: "🦓", title: "Zack's Alligator", level: "Level 2", key: "zacks_alligator" },
-  { emoji: "🕷️", title: "Charlotte's Web", level: "Level 3", key: "charlottes_web" },
-  { emoji: "🦁", title: "Narnia: The Lion & the Witch", level: "Level 3", key: "narnia" },
+  { emoji:"🐛", title:"The Very Hungry Caterpillar", level:"Level 1", key:"hungry_caterpillar" },
+  { emoji:"🐶", title:"Go, Dog. Go!", level:"Level 1", key:"go_dog" },
+  { emoji:"🎩", title:"The Cat in the Hat", level:"Level 2", key:"cat_hat" },
+  { emoji:"🦓", title:"Zack's Alligator", level:"Level 2", key:"zacks_alligator" },
+  { emoji:"🕷️", title:"Charlotte's Web", level:"Level 3", key:"charlottes_web" },
+  { emoji:"🦁", title:"Narnia: The Lion & the Witch", level:"Level 3", key:"narnia" },
 ];
 
 let selectedBook = null;
 let conversationHistory = [];
 let customBooks = [];
 let ttsEnabled = true;
-let isListening = false;
-let recognition = null;
-let recognitionActive = false;
+let ttsUtterance = null;
 
-// ── TTS ──
-function speak(text) {
-  if (!ttsEnabled) return;
+// ── TTS: child-friendly voice ──
+let voicesLoaded = false;
+let cachedVoice = null;
+
+function pickVoice() {
+  if (cachedVoice) return cachedVoice;
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices.length) return null;
+  // Priority: friendly female English voices that sound younger/cleaner
+  const priority = [
+    v => v.name === 'Samantha' && v.lang === 'en-US',
+    v => v.name === 'Karen' && v.lang === 'en-AU',
+    v => v.name === 'Moira' && v.lang === 'en-IE',
+    v => v.name.includes('Google') && v.lang === 'en-US',
+    v => v.lang === 'en-US' && !v.name.toLowerCase().includes('male'),
+    v => v.lang.startsWith('en'),
+  ];
+  for (const fn of priority) {
+    const found = voices.find(fn);
+    if (found) { cachedVoice = found; return found; }
+  }
+  return null;
+}
+
+window.speechSynthesis.onvoiceschanged = () => { voicesLoaded = true; cachedVoice = null; };
+
+function speak(text, onEnd) {
+  if (!ttsEnabled) { if (onEnd) onEnd(); return; }
   window.speechSynthesis.cancel();
-  const clean = text.replace(/<[^>]+>/g, '').replace(/[\u{1F300}-\u{1FFFF}]/gu, '');
+  const clean = text.replace(/<[^>]+>/g, '').replace(/[^\x00-\x7F]/g, m => {
+    // keep common punctuation, strip emoji
+    return /[\u2018\u2019\u201C\u201D\u2014\u2013]/.test(m) ? "'" : '';
+  }).trim();
+  if (!clean) { if (onEnd) onEnd(); return; }
+
   const utt = new SpeechSynthesisUtterance(clean);
   utt.lang = 'en-US';
-  utt.rate = 0.88;
-  utt.pitch = 1.1;
-  const voices = window.speechSynthesis.getVoices();
-  const pick = voices.find(v => v.lang === 'en-US' && /samantha|karen|moira|fiona|victoria|zira/i.test(v.name))
-            || voices.find(v => v.lang === 'en-US')
-            || voices.find(v => v.lang.startsWith('en'));
-  if (pick) utt.voice = pick;
+  utt.rate = 0.82;   // slightly slower = clearer for kids
+  utt.pitch = 1.25;  // higher = friendlier/younger
+  utt.volume = 1;
+  const v = pickVoice();
+  if (v) utt.voice = v;
+
+  const avatar = document.getElementById('avatarEl');
+  avatar.classList.add('speaking');
+  utt.onend = () => { avatar.classList.remove('speaking'); if (onEnd) onEnd(); };
+  utt.onerror = () => { avatar.classList.remove('speaking'); if (onEnd) onEnd(); };
+  ttsUtterance = utt;
   window.speechSynthesis.speak(utt);
 }
 
 function toggleTTS() {
   ttsEnabled = !ttsEnabled;
   document.getElementById('ttsTrack').className = ttsEnabled ? 'toggle-track on' : 'toggle-track';
-}
-
-// ── Speech Recognition ──
-function createRecognition() {
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) return null;
-
-  const r = new SR();
-  r.lang = 'en-US';
-  r.continuous = false;
-  r.interimResults = false;
-  r.maxAlternatives = 3;
-
-  r.onstart = () => {
-    recognitionActive = true;
-    setVoiceStatus('🎤 듣고 있어요... 영어로 말해보세요!');
-  };
-
-  r.onresult = (e) => {
-    recognitionActive = false;
-    const transcript = e.results[0][0].transcript;
-    setVoiceStatus('✅ 인식됨: ' + transcript);
-    document.getElementById('userInput').value = transcript;
-    setTimeout(() => {
-      setVoiceStatus('');
-      setMicIdle();
-      sendMessage();
-    }, 600);
-  };
-
-  r.onnomatch = () => {
-    recognitionActive = false;
-    setVoiceStatus('❌ 못 들었어요. 다시 눌러보세요!');
-    setMicIdle();
-    setTimeout(() => setVoiceStatus(''), 2000);
-  };
-
-  r.onerror = (e) => {
-    recognitionActive = false;
-    let msg = '❌ 오류: ' + e.error;
-    if (e.error === 'no-speech') msg = '🔇 소리가 없어요. 다시 눌러보세요!';
-    if (e.error === 'not-allowed') msg = '🚫 마이크 권한이 필요해요!';
-    if (e.error === 'network') msg = '🌐 네트워크 오류. 다시 시도해요!';
-    setVoiceStatus(msg);
-    setMicIdle();
-    setTimeout(() => setVoiceStatus(''), 3000);
-  };
-
-  r.onend = () => {
-    recognitionActive = false;
-    if (isListening) {
-      // ended without result — reset
-      setMicIdle();
-      if (!document.getElementById('voiceStatus').textContent.includes('인식됨')) {
-        setVoiceStatus('🔇 못 들었어요. 다시 눌러보세요!');
-        setTimeout(() => setVoiceStatus(''), 2500);
-      }
-    }
-  };
-
-  return r;
-}
-
-function handleMicTouch(e) {
-  e.preventDefault(); // prevent ghost click on Android
-  toggleMic();
-}
-function handleMicClick() {
-  // only fires if touch didn't
-  toggleMic();
-}
-
-function toggleMic() {
-  if (isListening) {
-    stopMic();
-  } else {
-    startMic();
-  }
-}
-
-function startMic() {
-  window.speechSynthesis.cancel();
-  // Always create a fresh recognition instance (Android workaround)
-  recognition = createRecognition();
-  if (!recognition) {
-    setVoiceStatus('❌ 이 브라우저는 음성 인식을 지원하지 않아요');
-    return;
-  }
-  try {
-    recognition.start();
-    isListening = true;
-    const btn = document.getElementById('micBtn');
-    btn.classList.add('listening');
-    btn.textContent = '⏹';
-  } catch(e) {
-    setVoiceStatus('❌ 마이크 시작 오류. 다시 눌러보세요!');
-    setTimeout(() => setVoiceStatus(''), 2500);
-  }
-}
-
-function stopMic() {
-  isListening = false;
-  if (recognition) {
-    try { recognition.abort(); } catch(e) {}
-    recognition = null;
-  }
-  setMicIdle();
-}
-
-function setMicIdle() {
-  isListening = false;
-  const btn = document.getElementById('micBtn');
-  btn.classList.remove('listening');
-  btn.textContent = '🎤';
-}
-
-function setVoiceStatus(msg) {
-  document.getElementById('voiceStatus').textContent = msg;
+  if (!ttsEnabled) { window.speechSynthesis.cancel(); document.getElementById('avatarEl').classList.remove('speaking'); }
 }
 
 // ── Books ──
 function renderBooks() {
-  const allBooks = [...BOOKS, ...customBooks];
-  document.getElementById('bookGrid').innerHTML = allBooks.map((b, i) => `
-    <div class="book-card ${selectedBook && selectedBook.key === b.key ? 'selected' : ''}" onclick="selectBook(${i})">
+  const all = [...BOOKS, ...customBooks];
+  document.getElementById('bookGrid').innerHTML = all.map((b, i) => `
+    <div class="book-card ${selectedBook && selectedBook.key===b.key ? 'selected' : ''}" onclick="selectBook(${i})">
       <span class="emoji">${b.emoji}</span>
       <div class="title">${b.title}</div>
-      <div class="level">${b.level || 'Custom'}</div>
+      <div class="level">${b.level||'Custom'}</div>
     </div>`).join('');
 }
 
 function selectBook(idx) {
   selectedBook = [...BOOKS, ...customBooks][idx];
-  renderBooks();
-  startChat();
+  renderBooks(); startChat();
 }
 
 function addCustomBook() {
   const val = document.getElementById('customBookInput').value.trim();
   if (!val) return;
-  customBooks.push({ emoji: '📗', title: val, level: 'Custom', key: 'custom_' + Date.now() });
+  customBooks.push({ emoji:'📗', title:val, level:'Custom', key:'custom_'+Date.now() });
   document.getElementById('customBookInput').value = '';
   renderBooks();
   selectBook(BOOKS.length + customBooks.length - 1);
@@ -406,57 +272,55 @@ function addCustomBook() {
 
 // ── Chat ──
 function startChat() {
-  stopMic();
   window.speechSynthesis.cancel();
   conversationHistory = [];
   document.getElementById('messages').innerHTML = '';
   document.getElementById('statusText').textContent = selectedBook.title;
   document.getElementById('userInput').disabled = false;
   document.getElementById('sendBtn').disabled = false;
-  document.getElementById('micBtn').disabled = false;
-  addMessage('ai', `Let's talk about <b>${selectedBook.title}</b>! 📚`);
+  addMessage('ai', `Let's talk about <b>${selectedBook.title}</b>! 📚`, false);
   askFirst();
 }
 
 function getSystem() {
-  return `You are Ollie, a warm and encouraging English tutor owl for a Korean 3rd-grade student (age 9).
-The student read: "${selectedBook.title}".
-Rules:
-- ONLY simple vocabulary (Grade 1-2). Max 2 short sentences per reply.
-- Always 1 emoji.
-- Praise before correcting: "Good try! We say ___"
-- If student writes Korean: say "Try in English! Hint: ___" and give one English word hint.
-- Ask about: characters, events, feelings, favorite part, lesson.
-- Keep it fun and playful!`;
+  return `You are Ollie, a cheerful and encouraging English tutor owl for a Korean 3rd-grade student (age 9).
+The student just finished reading: "${selectedBook.title}".
+
+Your speaking style:
+- Use ONLY very simple words (Grade 1-2 vocabulary). 
+- Keep each reply to 1-2 SHORT sentences. Never write long paragraphs.
+- Sound warm, playful, and excited — like a friendly cartoon character.
+- Use exactly 1 emoji per message.
+- When the student makes a grammar mistake: FIRST cheer ("Great try! 🌟"), THEN naturally model the correct form in your next sentence.
+- If the student writes in Korean: respond with "Try in English! 😊 Hint: [one key English word]"
+- Rotate through these topics: characters → what happened → feelings → favorite part → what they learned
+- Ask only ONE question at a time.`;
 }
 
 async function askFirst() {
   setThinking(true);
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514', max_tokens: 1000,
+        model:'claude-sonnet-4-20250514', max_tokens:150,
         system: getSystem(),
-        messages: [{ role: 'user', content: `Ask me an exciting first question about "${selectedBook.title}"! Be friendly!` }]
+        messages:[{ role:'user', content:`Start! Ask one simple, fun opening question about "${selectedBook.title}". Be very excited and friendly!` }]
       })
     });
     const data = await res.json();
-    const reply = data.content?.[0]?.text || "What did you think of the book? 😊";
+    const reply = data.content?.[0]?.text || "What did you like about the book? 😊";
     setThinking(false);
-    addMessage('ai', reply);
-    speak(reply);
+    addMessage('ai', reply, true);
     conversationHistory = [
-      { role: 'user', content: `Ask me a first question about "${selectedBook.title}".` },
-      { role: 'assistant', content: reply }
+      { role:'user', content:`Ask opening question about "${selectedBook.title}".` },
+      { role:'assistant', content: reply }
     ];
     showHints();
   } catch(e) {
     setThinking(false);
-    const fallback = "Hi! What was your favorite part of the book? 😊";
-    addMessage('ai', fallback);
-    speak(fallback);
+    const fb = "Hi! What was your favorite part? 😊";
+    addMessage('ai', fb, true);
   }
 }
 
@@ -464,17 +328,15 @@ async function sendMessage() {
   const input = document.getElementById('userInput');
   const text = input.value.trim();
   if (!text || !selectedBook) return;
-  input.value = '';
-  clearHints();
-  addMessage('user', text);
-  conversationHistory.push({ role: 'user', content: text });
+  input.value = ''; clearHints();
+  addMessage('user', text, false);
+  conversationHistory.push({ role:'user', content:text });
   setThinking(true);
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514', max_tokens: 1000,
+        model:'claude-sonnet-4-20250514', max_tokens:150,
         system: getSystem(),
         messages: conversationHistory
       })
@@ -482,23 +344,25 @@ async function sendMessage() {
     const data = await res.json();
     const reply = data.content?.[0]?.text || "Great! Tell me more! 😊";
     setThinking(false);
-    addMessage('ai', reply);
-    speak(reply);
-    conversationHistory.push({ role: 'assistant', content: reply });
+    addMessage('ai', reply, true);
+    conversationHistory.push({ role:'assistant', content:reply });
     showHints();
   } catch(e) {
     setThinking(false);
-    addMessage('ai', "Oops! Try again? 🙈");
+    addMessage('ai', "Oops! Try again? 🙈", false);
   }
 }
 
-function addMessage(role, text) {
+function addMessage(role, text, doSpeak) {
   const msgs = document.getElementById('messages');
   const div = document.createElement('div');
   div.className = `msg ${role}`;
-  div.innerHTML = `<div class="speaker">${role === 'ai' ? '🦉 Ollie' : '🧒 Me'}</div>${text}`;
+  const plain = text.replace(/<[^>]+>/g,'');
+  div.innerHTML = `<div class="speaker">${role==='ai' ? '🦉 Ollie' : '🧒 Me'}</div>${text}`
+    + (role==='ai' ? `<br><button class="replay-btn" onclick="speak('${plain.replace(/'/g,"\\'")}')">🔊 다시 듣기</button>` : '');
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
+  if (doSpeak) speak(plain);
 }
 
 function setThinking(show) {
@@ -508,9 +372,10 @@ function setThinking(show) {
 
 const HINT_SETS = [
   ["I liked...", "My favorite part was...", "The character..."],
-  ["I think...", "Because...", "It was..."],
+  ["I think...", "Because...", "It was fun!"],
   ["Yes, I did!", "No, I didn't.", "Maybe..."],
   ["The story is about...", "At the end...", "I felt..."],
+  ["He is...", "She is...", "They..."],
 ];
 let hintIdx = 0;
 function showHints() {
@@ -518,15 +383,11 @@ function showHints() {
   document.getElementById('hints').innerHTML = set.map(h =>
     `<span class="hint-chip" onclick="useHint('${h}')">${h}</span>`).join('');
 }
-function clearHints() { document.getElementById('hints').innerHTML = ''; }
-function useHint(t) {
-  document.getElementById('userInput').value = t;
-  document.getElementById('userInput').focus();
-}
+function clearHints() { document.getElementById('hints').innerHTML=''; }
+function useHint(t) { document.getElementById('userInput').value=t; document.getElementById('userInput').focus(); }
 
-document.getElementById('userInput').addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
-document.getElementById('customBookInput').addEventListener('keydown', e => { if (e.key === 'Enter') addCustomBook(); });
-window.speechSynthesis.onvoiceschanged = () => {};
+document.getElementById('userInput').addEventListener('keydown', e=>{ if(e.key==='Enter') sendMessage(); });
+document.getElementById('customBookInput').addEventListener('keydown', e=>{ if(e.key==='Enter') addCustomBook(); });
 renderBooks();
 </script>
 </body>
